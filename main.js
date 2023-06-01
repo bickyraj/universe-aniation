@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 // Create a scene
 const scene = new THREE.Scene();
@@ -65,7 +66,7 @@ const particleMaterial = new THREE.PointsMaterial({
 const particleSystem = new THREE.Points(particles, particleMaterial);
 scene.add(particleSystem);
 
-const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new TrackballControls(camera, renderer.domElement);
 
 function animate() {
   requestAnimationFrame(animate);
