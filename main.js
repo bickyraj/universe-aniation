@@ -16,14 +16,14 @@ let composer, renderer, mixer, clock;
 // Create the scene, camera, and renderer
 const params = {
     threshold: 0,
-    strength: 1.5,
+    strength: 0.381,
     radius: 0,
-    exposure: 1
+    exposure: 0.9
 };
 
 var scene = new THREE.Scene();
 stats = new Stats();
-camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 50, 1000);
+camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 renderer = new THREE.WebGLRenderer( { antialias: true } );
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -33,13 +33,14 @@ document.body.appendChild( stats.dom );
 var controls = new TrackballControls(camera, renderer.domElement);
 
 // Set up the initial position and rotation of the camera
-camera.position.set( - 5, 2.5, - 3.5 );
+camera.position.set( 100, 0, 0 );
 scene.add(camera);
 //  adding to scene
 let axes = new THREE.AxesHelper(5.0);
 scene.add(axes);
 scene.background = new THREE.Color("#060a27");
-scene.add( new THREE.AmbientLight( 0x898989 ) );
+const ambientLight = new THREE.AmbientLight(0x898989)
+scene.add(ambientLight);
 const pointLight = new THREE.PointLight( 0xffffff, 1 );
 camera.add( pointLight );
 const renderScene = new RenderPass( scene, camera );
@@ -62,6 +63,65 @@ function initGalaxy() {
     const color = "#fffff";
     galaxy.createGaussianStar(radius, color);
     galaxy.addToScene(scene);
+}
+
+function initServerObject() {
+    // Create a GLTFLoader instance
+    const loader = new GLTFLoader();
+
+    // Load the glTF model
+    loader.load('models/pc.glb', function (gltf) {
+      const model = gltf.scene;
+
+      // Traverse through the model's children to access the wireframe geometry
+      model.traverse(function (node) {
+        if (node.isMesh) {
+          const wireframeGeometry = new THREE.WireframeGeometry(node.geometry);
+
+          // Create an array of colors for each vertex
+          const colors = [];
+
+          // Define three colors for the wireframe
+          const color1 = new THREE.Color(0xff0000); // Red
+          const color2 = new THREE.Color(0x00ff00); // Green
+          const color3 = new THREE.Color(0x0000ff); // Blue
+
+          // Assign the colors to each vertex
+          for (let i = 0; i < wireframeGeometry.attributes.position.count; i++) {
+            const colorIndex = i % 3; // Alternate between the three colors
+            let color;
+
+            if (colorIndex === 0) {
+              color = color1;
+            } else if (colorIndex === 1) {
+              color = color2;
+            } else {
+              color = color3;
+            }
+
+            colors.push(color.r, color.g, color.b);
+          }
+
+          const colorAttribute = new THREE.BufferAttribute(new Float32Array(colors), 3);
+          wireframeGeometry.setAttribute('color', colorAttribute);
+          // Create a square particle material
+          const particleMaterial = new THREE.PointsMaterial({
+            size: 0.02, // Size of each particle
+            vertexColors: THREE.VertexColors,
+          });
+
+          // Create the particle system using the wireframe geometry and particle material
+          const particles = new THREE.Points(wireframeGeometry, particleMaterial);
+
+          // Add the particle system to the scene
+          model.visible = false;
+          scene.add(particles);
+        }
+      });
+
+      // Add the model to the scene
+      scene.add(model);
+    });
 }
 
 const gui = new GUI();
@@ -104,10 +164,12 @@ function animate() {
   stats.update();
 
   composer.render();
+//   renderer.render(scene, camera);
 }
 
 // Start the animation
-initGalaxy();
+// initGalaxy();
+initServerObject();
 animate();
 
 
