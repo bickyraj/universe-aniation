@@ -10,11 +10,11 @@ export default class Galaxy {
 
   createGaussianStar(radius) {
     const galaxyColor = [
-        "#011307",
-        "#001736",
-        "#00481a",
-        "#155e89",
-        "#9aeadd",
+        "#ffe4f2",
+        "#e54ed0",
+        "#9f45b0",
+        "#44008b",
+        "#00076f",
     ];
     for (let j = 0; j < ARMS; j++) {
         for (let i = 0; i < NUM_STARS/ARMS; i++) {

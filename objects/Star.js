@@ -15,8 +15,14 @@ export default class Star {
   }
 
   getStar() {
-    const geometry = new THREE.SphereGeometry(this.radius);
-    const material = new THREE.MeshBasicMaterial({ color: this.color });
+    const geometry = new THREE.SphereGeometry(this.radius, 64, 64);
+    // const geometry = new THREE.CircleGeometry(this.radius, 64);
+    const material = new THREE.MeshBasicMaterial({ 
+        color: this.color,
+        transparent: true, // Enable transparency
+        opacity: 0.3, // Set opacity value (0.0 to 1.0)
+        side: THREE.DoubleSide
+    });
     this.mesh = new THREE.Mesh(geometry, material);
   }
 }

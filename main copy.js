@@ -9,8 +9,6 @@ import Stats from 'three/addons/libs/stats.module.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { STAR_SIZE } from './config/constants';
-import Universe from './objects/Universe';
 
 let camera, stats;
 let composer, renderer, mixer, clock;
@@ -35,28 +33,16 @@ document.body.appendChild( stats.dom );
 var controls = new TrackballControls(camera, renderer.domElement);
 
 // Set up the initial position and rotation of the camera
-const cameraPosition = new THREE.Vector3(0, 0, 5);
-camera.position.copy(cameraPosition);
+camera.position.set( 100, 0, 0 );
 scene.add(camera);
 //  adding to scene
 let axes = new THREE.AxesHelper(5.0);
 scene.add(axes);
 scene.background = new THREE.Color("#060a27");
-// const ambientLight = new THREE.AmbientLight(0x898989)
-// scene.add(ambientLight);
+const ambientLight = new THREE.AmbientLight(0x898989)
+scene.add(ambientLight);
 const pointLight = new THREE.PointLight( 0xffffff, 1 );
 camera.add( pointLight );
-
-const spotLight = new THREE.SpotLight(0xffffff, 1);
-spotLight.position.set(0, 0, 5); // Set the position of the light
-spotLight.target.position.set(0, 0, 0); // Set the position that the light is pointing at
-spotLight.angle = Math.PI / 4; // Set the angle of the spotlight cone
-spotLight.penumbra = 0.05; // Set the penumbra (fade) of the spotlight
-spotLight.decay = 2; // Set the decay rate of the light intensity with the distance
-
-// Add the light to the scene
-scene.add(spotLight);
-
 const renderScene = new RenderPass( scene, camera );
 
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
@@ -71,16 +57,9 @@ composer.addPass( renderScene );
 composer.addPass( bloomPass );
 composer.addPass( outputPass );
 
-function initUniverse() {
-    const universe = new Universe();
-    universe.createRandomStars();
-    universe.addToScene(scene);
-
-}
-
 function initGalaxy() {
     const galaxy = new Galaxy();
-    const radius = STAR_SIZE;
+    const radius = 5;
     const color = "#fffff";
     galaxy.createGaussianStar(radius, color);
     galaxy.addToScene(scene);
@@ -182,7 +161,6 @@ function animate() {
 }
 
 // Start the animation
-initUniverse();
 initGalaxy();
 // initServerObject();
 animate();
